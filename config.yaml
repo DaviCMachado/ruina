@@ -23,7 +23,7 @@ schedules:
     restaurant: 2
     vegetarian: false
     coffee: false
-    lunch: true
+    lunch: false
     dinner: false
 
   - weekday: Thu
@@ -37,5 +37,5 @@ schedules:
     restaurant: 2
     vegetarian: false
     coffee: false
-    lunch: true
+    lunch: false
     dinner: false
