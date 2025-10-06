@@ -1,17 +1,21 @@
-name: Ruina
+name: Ruina Keep-Alive
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '0 10 * * *'  # todo dia às 10h UTC
 
 jobs:
   ruina:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # necessário para commit automático
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
@@ -22,6 +26,16 @@ jobs:
       - name: Executar script principal
         run: |
           python main.py -u "${{ secrets.Username }}" -p "${{ secrets.Password }}"
+        continue-on-error: true  # evita que falhas parem o workflow
 
-      - name: Keep-alive log
-        run: echo "Última execução automática:$(date)"
+      - name: Atualizar arquivo de keep-alive
+        run: |
+          echo "Última execução: $(date)" > last_run.txt
+
+      - name: Commit e push automático
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add last_run.txt
+          git commit -m "Atualização automática de keep-alive" || echo "Sem alterações para commitar"
+          git push
