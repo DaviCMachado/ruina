@@ -1,18 +1,27 @@
 name: Ruina
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:      # permite rodar manualmente
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '0 10 * * *'  # executa todo dia às 10h UTC (~07h no Brasil)
 
 jobs:
   ruina:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: pip
-      - run: pip install -r requirements.txt
-      - run: python main.py -u "${{ secrets.Username }}" -p "${{ secrets.Password }}"
+          cache: 'pip'
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Executar script principal
+        run: python main.py -u "${{ secrets.Username }}" -p "${{ secrets.Password }}"
+
+      - name: Keep-alive log (opcional)
+        run: echo "Última execução automática: $(date)"
